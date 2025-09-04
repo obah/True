@@ -46,7 +46,7 @@ contract TrueAuthenticity is EIP712 {
         owner = msg.sender;
         CERTIFICATE_TYPE_HASH = keccak256(bytes(certificate));
 
-        console.log("TrueAuthenticity deployed to address: '%s' by %s", address(this), msg.sender);
+        console.log("TrueAuthenticity deployed to address: %s by %s", address(this), msg.sender);
 
         emit AuthenticityCreated(address(this), msg.sender);
     }
@@ -73,6 +73,7 @@ contract TrueAuthenticity is EIP712 {
 
         isExist[nameHash] = true;
 
+        console.log("Manufacturer %s registers as %s", manufacturer, name);
         emit ManufacturerRegistered(manufacturer, name);
     }
 
