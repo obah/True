@@ -8,4 +8,15 @@ contract ITrue {
         address manufacturerAddress;
     }
 
+    struct Certificate {
+        string name;
+        string uniqueId;
+        string serial;
+        uint256 date;
+        address owner;
+        bytes32 metadataHash;
+        string[] metadata;
+    }
+
+
 }

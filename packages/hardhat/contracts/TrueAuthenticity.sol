@@ -76,4 +76,43 @@ contract TrueAuthenticity is EIP712 {
         emit ManufacturerRegistered(manufacturer, name);
     }
 
+    function getManufacturer(address manufacturerAddress) external view returns (ITrue.Manufacturer memory) {
+        if (manufacturers[manufacturerAddress].manufacturerAddress == address(0)) {
+            revert Errors.DOES_NOT_EXIST(manufacturerAddress);
+        }
+        return manufacturers[manufacturerAddress];
+    }
+
+    function verifySignature(
+        ITrue.Certificate memory certificate,
+        bytes memory signature
+    ) public view returns (bool) {
+        bytes32 structHash = keccak256(
+            abi.encode(
+                CERTIFICATE_TYPE_HASH,
+                keccak256(bytes(certificate.name)),
+                keccak256(bytes(certificate.uniqueId)),
+                keccak256(bytes(certificate.serial)),
+                certificate.date,
+                certificate.owner,
+                certificate.metadataHash
+            )
+        );
+
+        bytes32 digest = _hashTypedDataV4(structHash);
+        address signer = digest.recover(signature);
+
+        // Ensure manufacturer exists
+        if (manufacturers[certificate.owner].manufacturerAddress == address(0)) {
+            revert Errors.DOES_NOT_EXIST(certificate.owner);
+        }
+
+        // Check that the signer is indeed the manufacturer
+        if (signer != certificate.owner) {
+            revert Errors.INVALID_SIGNATURE();
+        }
+
+        return true;
+    }
+
 }
