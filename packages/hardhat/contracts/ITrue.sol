@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.29;
 
-contract ITrue {
+interface ITrue {
 
     struct Manufacturer {
         string name;
@@ -18,5 +18,6 @@ contract ITrue {
         string[] metadata;
     }
 
+    function createItem(address user, ITrue.Certificate memory certificate, string memory manufacturerName) external;
 
 }

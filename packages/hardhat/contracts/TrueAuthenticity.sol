@@ -102,17 +102,38 @@ contract TrueAuthenticity is EIP712 {
         bytes32 digest = _hashTypedDataV4(structHash);
         address signer = digest.recover(signature);
 
-        // Ensure manufacturer exists
+        // to ensure manufacturer exists
         if (manufacturers[certificate.owner].manufacturerAddress == address(0)) {
             revert Errors.DOES_NOT_EXIST(certificate.owner);
         }
 
-        // Check that the signer is indeed the manufacturer
+        // to check that the signer is indeed the manufacturer
         if (signer != certificate.owner) {
             revert Errors.INVALID_SIGNATURE();
         }
 
         return true;
+    }
+
+    function userClaimOwnership(ITrue.Certificate memory certificate, bytes memory signature) external {
+        //first verify the authenticity of the signature
+        verifySignature(certificate, signature);
+
+        OWNERSHIP.createItem(
+            msg.sender,
+            certificate,
+            manufacturers[certificate.owner].name
+        );
+    }
+
+    function verifyAuthenticity(
+        ITrue.Certificate memory certificate,
+        bytes memory signature
+    ) external view returns (bool, string memory) {
+        //first check the authenticity of the signature
+        bool isValid = verifySignature(certificate, signature);
+
+        return (isValid, manufacturers[certificate.owner].name);
     }
 
 }
