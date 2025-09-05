@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.29;
 
-import "hardhat/console.sol";
+//import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./Errors.sol";
@@ -46,7 +46,7 @@ contract TrueAuthenticity is EIP712 {
         owner = msg.sender;
         CERTIFICATE_TYPE_HASH = keccak256(bytes(certificate));
 
-        console.log("TrueAuthenticity deployed to address: %s by %s", address(this), msg.sender);
+//        console.log("TrueAuthenticity deployed to address: %s by %s", address(this), msg.sender);
 
         emit AuthenticityCreated(address(this), msg.sender);
     }
@@ -73,7 +73,7 @@ contract TrueAuthenticity is EIP712 {
 
         isExist[nameHash] = true;
 
-        console.log("Manufacturer %s registers as %s", manufacturer, name);
+//        console.log("Manufacturer %s registers as %s", manufacturer, name);
         emit ManufacturerRegistered(manufacturer, name);
     }
 

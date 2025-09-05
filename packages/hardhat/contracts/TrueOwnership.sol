@@ -2,7 +2,7 @@
 pragma solidity ^0.8.29;
 
 
-import "hardhat/console.sol";
+//import "hardhat/console.sol";
 import "./Errors.sol";
 import "./ITrue.sol";
 import "./TrueAuthenticity.sol";
@@ -24,10 +24,10 @@ contract TrueOwnership {
     event OwnershipTransferred(string itemId, address indexed newOnwer, address indexed oldOnwer);
     event AuthenticitySet(address indexed authenticityAddress);
 
-    constructor(address _owner) {
-        owner = _owner;
+    constructor() {
+        owner = msg.sender;
 
-        emit OwnershipCreated(address(this), _owner);
+        emit OwnershipCreated(address(this), msg.sender);
     }
 
     modifier addressZeroCheck(address _user) {

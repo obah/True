@@ -22,10 +22,17 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  await deploy("YourContract", {
+  console.log(`${deployer} is Deploying your contract...`);
+
+  // OWNER="0xF2E7E2f51D7C9eEa9B0313C2eCa12f8e43bd1855"
+  // CERTIFICATE="Certificate(string name,string uniqueId,string serial,uint256 date,address owner,bytes32 metadataHash)"
+  // SIGNING_DOMAIN="CertificateAuth"
+  // SIGNATURE_VERSION="1"
+
+  await deploy("TrueOwnership", {
     from: deployer,
     // Contract constructor arguments
-    args: [deployer],
+    // args: [deployer],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
@@ -33,12 +40,48 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   });
 
   // Get the deployed contract to interact with it after deploying.
-  const yourContract = await hre.ethers.getContract<Contract>("YourContract", deployer);
-  console.log("👋 Initial greeting:", await yourContract.greeting());
+  const trueOwnership = await hre.ethers.getContract<Contract>("TrueOwnership", deployer);
+
+  const trueOwnershipAddress = await trueOwnership.getAddress();
+  console.log("True Ownership Address: ", trueOwnershipAddress);
+  // console.log("👋 Initial greeting:", await yourContract.greeting());
+
+  //==============================
+
+  //   constructor (
+  //     address ownershipAdd,
+  //     string memory certificate,
+  //     string memory signingDomain,
+  //     string memory signatureVersion
+  // )
+
+  await deploy("TrueAuthenticity", {
+    from: deployer,
+    // Contract constructor arguments
+    args: [
+      trueOwnershipAddress,
+      "Certificate(string name,string uniqueId,string serial,uint256 date,address owner,bytes32 metadataHash)",
+      "CertificateAuth",
+      1,
+    ],
+    log: true,
+    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+    // automatically mining the contract deployment transaction. There is no effect on live networks.
+    autoMine: true,
+  });
+
+  // Get the deployed contract to interact with it after deploying.
+  const trueAuthenticity = await hre.ethers.getContract<Contract>("TrueAuthenticity", deployer);
+
+  const trueAuthenticityAddress = await trueAuthenticity.getAddress();
+  console.log("True Authenticity Address: ", trueAuthenticityAddress);
 };
 
 export default deployYourContract;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-deployYourContract.tags = ["YourContract"];
+deployYourContract.tags = ["TrueOwnership", "TrueAuthenticity"];
+
+// True Ownership Address:  0xE62B0E0F99584660825301Ce4B83be2771A1c6A2
+// True Authenticity Address:  0xC3f2de4eCBF8530Ca32615Df656109EaFA621a16
