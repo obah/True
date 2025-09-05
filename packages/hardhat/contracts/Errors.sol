@@ -10,4 +10,5 @@ contract Errors {
     error NAME_TOO_SHORT(string);
     error UNAVAILABLE_USERNAME(string);
     error INVALID_SIGNATURE();
+    error AUTHENTICITY_NOT_SET();
 }
