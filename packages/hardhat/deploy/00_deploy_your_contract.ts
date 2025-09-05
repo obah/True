@@ -83,5 +83,5 @@ export default deployYourContract;
 // e.g. yarn deploy --tags YourContract
 deployYourContract.tags = ["TrueOwnership", "TrueAuthenticity"];
 
-// True Ownership Address:  0xE62B0E0F99584660825301Ce4B83be2771A1c6A2
-// True Authenticity Address:  0xC3f2de4eCBF8530Ca32615Df656109EaFA621a16
+// TRUE AUTHENTICITY: https://sepolia.basescan.org/address/0xC3f2de4eCBF8530Ca32615Df656109EaFA621a16#code
+// TRUE OWNERSHIP: https://sepolia.basescan.org/address/0xE62B0E0F99584660825301Ce4B83be2771A1c6A2#code

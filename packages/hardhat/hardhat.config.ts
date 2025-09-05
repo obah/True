@@ -153,7 +153,7 @@ export default config;
 
 // reusing "TrueOwnership" at 0xEF6e51980dA0c422BecB9d623Ad9E9231c0725c2
 // True Ownership Address:  0xEF6e51980dA0c422BecB9d623Ad9E9231c0725c2
-//
+// https://sepolia.basescan.org/address/0xEF6e51980dA0c422BecB9d623Ad9E9231c0725c2#code
 
 // reusing "TrueAuthenticity" at 0xD6787D8603A47d872b7Eea81e4832f546E5B2A13
 // True Authenticity Address:  0xD6787D8603A47d872b7Eea81e4832f546E5B2A13
