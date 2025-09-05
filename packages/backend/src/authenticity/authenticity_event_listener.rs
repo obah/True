@@ -1,6 +1,6 @@
 use crate::authenticity::authenticity_abi::{
-    Authenticity,
-    AuthenticityEvents,
+    TrueAuthenticity,
+    TrueAuthenticityEvents,
     AuthenticityCreatedFilter,
     ManufacturerRegisteredFilter
 };
@@ -25,7 +25,7 @@ pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()>
 
     // Fetch historical events from the last 1,000 blocks in chunks
     let latest_block = client.get_block_number().await.map_err(|e| {
-        eprintln!("Failed to get latest block: {:?}", e);
+        eprintln!("Failed to get latest block: {:?}", e.to_string());
         eyre::eyre!("Failed to get latest block: {}", e)
     })?;
     let from_block = latest_block.saturating_sub(U64::from(1000));
@@ -108,7 +108,7 @@ pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()>
     loop {
         match stream.next().await {
 
-            Some(Ok((AuthenticityEvents::ManufacturerRegisteredFilter(event), meta))) => {
+            Some(Ok((TrueAuthenticityEvents::ManufacturerRegisteredFilter(event), meta))) => {
                 let txn_hash = Some(format!("0x{}", hex::encode(meta.transaction_hash)));
                 let conn = &mut state.db_pool.get().map_err(|e| {
                     eprintln!("Failed to get DB connection: {:?}", e);
@@ -117,7 +117,7 @@ pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()>
                 process_manufacturer_registered_event(&event, conn, txn_hash, &contract).await?;
             }
 
-            Some(Ok((AuthenticityEvents::AuthenticityCreatedFilter(event), meta))) => {
+            Some(Ok((TrueAuthenticityEvents::AuthenticityCreatedFilter(event), meta))) => {
                 let txn_hash = Some(format!("0x{}", hex::encode(meta.transaction_hash)));
                 let conn = &mut state.db_pool.get().map_err(|e| {
                     eprintln!("Failed to get DB connection: {:?}", e);
@@ -126,7 +126,7 @@ pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()>
                 process_authenticity_created_event(&event, conn, txn_hash)?;
             }
 
-            Some(Ok((AuthenticityEvents::Eip712DomainChangedFilter(_event), meta))) => {
+            Some(Ok((TrueAuthenticityEvents::Eip712DomainChangedFilter(_event), meta))) => {
                 eprintln!(
                     "EIP712DomainChanged event received (tx: 0x{})",
                     hex::encode(meta.transaction_hash)
@@ -152,7 +152,7 @@ async fn process_manufacturer_registered_event(
     event: &ManufacturerRegisteredFilter,
     conn: &mut PgConnection,
     txn_hash: Option<String>,
-    contract: &Authenticity<SignerMiddleware<Provider<Http>, Wallet<SigningKey<Secp256k1>>>>,
+    contract: &TrueAuthenticity<SignerMiddleware<Provider<Http>, Wallet<SigningKey<Secp256k1>>>>,
 ) -> Result<()> {
     let manufacturer_address = to_checksum(&event.manufacturer_address, None);
     let manufacturer_name = event.username.clone();
@@ -250,69 +250,3 @@ fn process_authenticity_created_event(
 
     Ok(())
 }
-//
-// async fn process_manufacturer_registered_event_old(
-//     event: &ManufacturerRegisteredFilter,
-//     conn: &mut PgConnection,
-//     txn_hash: Option<String>,
-//     contract: &Authenticity<SignerMiddleware<Provider<Http>, Wallet<SigningKey<Secp256k1>>>>,
-// ) -> Result<()> {
-//     // use crate::schema::manufacturers::dsl::*;
-//     let manufacturer_address = to_checksum(&event.manufacturer_address, None);
-//     eprintln!("manu address: {:?}", manufacturer_address);
-//
-//
-//     // Check if manufacturer exists
-//     let exists: bool = manufacturers::table
-//         .filter(manufacturers::manufacturer_address.eq(&manufacturer_address))
-//         .select(diesel::dsl::count_star())
-//         .first::<i64>(conn)
-//         .map(|count| count > 0)
-//         .map_err(|e| {
-//             eprintln!(
-//                 "Failed to check existing manufacturer {}: {:?}",
-//                 manufacturer_address, e
-//             );
-//             eyre::eyre!("Failed to check existing manufacturer: {}", e)
-//         })?;
-//
-//     if exists {
-//         eprintln!(
-//             "Skipping duplicate manufacturer registration for {} (tx: {:?})",
-//             manufacturer_address, txn_hash
-//         );
-//         return Ok(());
-//     }
-//
-//     // Fetch the actual manufacturer name from the contract
-//     let manufacturer = contract
-//         .get_manufacturer(event.manufacturer_address)
-//         .call()
-//         .await
-//         .map_err(|e| {
-//             eprintln!(
-//                 "Failed to call get_manufacturer for address {}: {:?}",
-//                 manufacturer_address, e
-//             );
-//             eyre::eyre!("Failed to call get_manufacturer: {}", e)
-//         })?;
-//
-//     let manufacturer_name = manufacturer.name;
-//
-//     // Insert the manufacturer
-//     diesel::insert_into(manufacturers::table)
-//         .values(NewManufacturer {
-//             manufacturer_address,
-//             manufacturer_name,
-//             is_registered: true,
-//             registered_at: Utc::now().naive_utc().to_string(),
-//             tnx_hash: txn_hash.unwrap(),
-//         })
-//         .execute(conn)
-//         .map_err(|e| {
-//             eprintln!("Failed to insert manufacturer: {:?}", e);
-//             eyre::eyre!("Failed to insert manufacturer: {}", e)
-//         })?;
-//
-//     Ok(())
-// }

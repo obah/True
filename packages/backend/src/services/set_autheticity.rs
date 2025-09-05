@@ -1,3 +1,4 @@
+use crate::config::app_state::AppState;
 use axum::{
     extract::{Json, State},
     http::StatusCode,
@@ -5,16 +6,14 @@ use axum::{
     Json as AxumJson,
 };
 use ethers::{
-    prelude::*,
-    providers::{Http, Provider},
+    prelude::*
+    ,
     types::{Address, U256},
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::sync::Arc;
 use utoipa::ToSchema;
-use crate::ownership::ownership_abi::Ownership;
-use crate::config::app_state::AppState;
 
 // Define the input struct for the endpoint
 #[derive(Deserialize, ToSchema)]

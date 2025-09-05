@@ -1,4 +1,4 @@
-use crate::authenticity::authenticity_abi::authenticity;
+use crate::authenticity::authenticity_abi::true_authenticity;
 use crate::utility::to_meta_hash;
 use ethabi::ethereum_types::{Address, U256};
 use ethers::contract::EthEvent;
@@ -10,6 +10,7 @@ use std::env;
 use ethabi::Bytes;
 use utoipa::ToSchema;
 use validator::{Validate, ValidationError};
+use crate::authenticity;
 
 // Certificate struct for EIP-712
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -157,7 +158,7 @@ impl TryFrom<SignedCertificate> for Certificate {
     }
 }
 
-impl From<Certificate> for authenticity::Certificate {
+impl From<Certificate> for true_authenticity::Certificate {
     fn from(cert: Certificate) -> Self {
         
         Self {

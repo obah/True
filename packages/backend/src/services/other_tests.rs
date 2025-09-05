@@ -1,4 +1,4 @@
-use crate::authenticity::authenticity_abi::authenticity;
+use crate::authenticity::authenticity_abi::{true_authenticity};
 use crate::config::app_state::AppState;
 use crate::models::certificate_model::RegInput;
 use crate::models::certificate_model::{Certificate, CertificateData};
@@ -164,7 +164,7 @@ pub async fn verify_signature(
     eprintln!("Signature: {:?}", signature);
 
     // Convert to contract certificate
-    let contract_cert: authenticity::Certificate = certificate.into();
+    let contract_cert: true_authenticity::Certificate = certificate.into();
     // let sig_bytes = to_bytes(signature);
 
     // Call create_item

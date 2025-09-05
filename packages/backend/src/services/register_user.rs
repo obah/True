@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::sync::Arc;
 use utoipa::ToSchema;
-use crate::ownership::ownership_abi::Ownership;
+use crate::ownership::ownership_abi::TrueOwnership;
 use crate::config::app_state::AppState;
 
 // Define the input struct for the endpoint
@@ -146,40 +146,3 @@ async fn register_user_internal(
         transaction_hash: format!("0x{}", hex::encode(receipt.transaction_hash)),
     })
 }
-
-// async fn register_user_internal(
-//     state: &Arc<AppState>,
-//     request: &UserRegisterRequest,
-// ) -> Result<String> {
-//     // Validate caller address
-//     let caller: Address = request
-//         .caller
-//         .parse()
-//         .map_err(|_| eyre::eyre!("Invalid caller address"))?;
-//
-//     // Call the userRegisters function on the smart contract
-//     let contract = &state.ownership_contract;
-//     let call = contract.user_registers(request.username.clone()).from(caller);
-//
-//     // Send the transaction
-//     let pending_tx = call
-//         .send()
-//         .await
-//         .map_err(|e| {
-//             eprintln!("Failed to send transaction for user {}: {:?}", request.username, e);
-//             eyre::eyre!("Failed to send transaction: {}", e)
-//         })?;
-//
-//     // Await transaction confirmation
-//     let receipt = pending_tx
-//         .await
-//         .map_err(|e| {
-//             eprintln!("Failed to confirm transaction for user {}: {:?}", request.username, e);
-//             eyre::eyre!("Failed to confirm transaction: {}", e)
-//         })?
-//         .ok_or_else(|| eyre::eyre!("Transaction receipt not found"))?;
-//
-//     // Return the transaction hash
-//     Ok(format!("0x{}", hex::encode(receipt.transaction_hash)))
-// }
-

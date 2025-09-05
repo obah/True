@@ -1,4 +1,4 @@
-use config::server::server;
+use crate::config::server::server;
 
 mod config;
 mod models;

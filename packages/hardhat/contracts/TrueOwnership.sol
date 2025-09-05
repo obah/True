@@ -54,7 +54,7 @@ contract TrueOwnership {
         emit AuthenticitySet(authenticityAddress);
     }
 
-    function userRegisters(string calldata username) external addressZeroCheck(msg.sender)  isAuthenticitySet {
+    function userRegisters(string calldata username) external addressZeroCheck(msg.sender) isAuthenticitySet {
 
         bytes32 usernameHash = keccak256(bytes(username));
 
@@ -75,5 +75,92 @@ contract TrueOwnership {
         isExist[usernameHash] = true;
 
         emit UserRegistered(msg.sender, username);
+    }
+
+    function getUsername(address userAddress) public view isAuthenticitySet returns (string memory) {
+        return usernames[userAddress];
+    }
+
+    function createItem(address user, ITrue.Certificate memory certificate, string memory manufacturerName
+    ) external addressZeroCheck(certificate.owner) addressZeroCheck(user) isAuthenticitySet {
+        if (msg.sender != AUTHENTICITY) { //Only Authenticity contract can call this function
+            revert Errors.UNAUTHORIZED_CALLER(msg.sender);
+        }
+
+        if (!isRegistered(user)) {
+            revert Errors.NOT_REGISTERED(user);
+        }
+
+        bytes32 itemIdHash = keccak256(bytes(certificate.uniqueId));
+
+        if (items[itemIdHash].owner != address(0)) {
+            revert Errors.ITEM_CLAIMED_ALREADY(certificate.uniqueId);
+        }
+
+        // Store struct in one go
+        items[itemIdHash] = ITrue.Item({
+            itemId: certificate.uniqueId,
+            owner: user,
+            name: certificate.name,
+            date: certificate.date,
+            manufacturer: manufacturerName,
+            metadata: certificate.metadata,
+            serial: certificate.serial
+        });
+
+        emit ItemCreated(certificate.uniqueId);
+    }
+
+    function newOwnerClaimOwnership(string memory itemId, address newOwner
+    ) external isAuthenticitySet onlyContractOwner addressZeroCheck(newOwner) {
+
+        if (!isRegistered(newOwner)) {
+            revert Errors.NOT_REGISTERED(newOwner);
+        }
+
+        bytes32 itemIdHash = keccak256(bytes(itemId));
+        //item must exist to change owner, else we'll be creating a new item which we don't want
+        if (items[itemIdHash].owner == address(0)) {
+            revert Errors.ITEM_DOESNT_EXIST(itemId);
+        }
+
+        ITrue.Item storage item = items[itemIdHash];
+
+        address oldOwner = item.owner;
+
+        item.owner = newOwner;
+
+        emit OwnershipTransferred(itemId, newOwner, oldOwner);
+    }
+
+    function getItem(string memory itemId) public view isAuthenticitySet returns (ITrue.Item memory) {
+
+        ITrue.Item storage item = items[keccak256(bytes(itemId))];
+
+        if (item.owner == address(0)) {
+            revert Errors.ITEM_DOESNT_EXIST(itemId); // Or pass itemIdHash if you want
+        }
+
+        return item;
+    }
+
+    function verifyOwnership(string memory itemId) external view isAuthenticitySet returns (ITrue.Owner memory) {
+        ITrue.Item memory _item = getItem(itemId);
+
+        return
+            ITrue.Owner({
+            name: _item.name,
+            itemId: _item.itemId,
+            username: usernames[_item.owner],
+            owner: _item.owner
+        });
+    }
+
+    function isOwner(address user, string memory itemId) external view isAuthenticitySet returns (bool) {
+        return items[keccak256(bytes(itemId))].owner == user;
+    }
+
+    function isRegistered(address userAddress) internal view returns (bool) {
+        return bytes(usernames[userAddress]).length > 2;
     }
 }

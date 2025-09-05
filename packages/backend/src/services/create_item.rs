@@ -1,4 +1,4 @@
-use crate::ownership::ownership_abi::Ownership;
+use crate::ownership::ownership_abi::TrueOwnership;
 use crate::config::app_state::AppState;
 use crate::ownership::ownership_abi;
 use axum::{

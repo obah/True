@@ -1,19 +1,15 @@
-use crate::authenticity::authenticity_abi::{Authenticity, Certificate};
 use crate::config::app_state::AppState;
 use crate::contract_models::Item;
-use crate::schema::items::{name, serial};
-use crate::schema::users_info::username;
 use crate::schema::{items, manufacturers};
 use axum::{
-    Json as AxumJson,
     extract::{Path, State},
     http::StatusCode,
     response::IntoResponse,
+    Json as AxumJson,
 };
 use diesel::associations::HasTable;
 use diesel::prelude::*;
-use ethers::types::U256;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use serde_json::json;
 use std::sync::Arc;
 use utoipa::ToSchema;

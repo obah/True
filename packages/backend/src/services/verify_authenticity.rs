@@ -13,7 +13,8 @@ use ethers::{
 use std::error::Error;
 use std::sync::Arc;
 use validator::Validate;
-use crate::authenticity::authenticity_abi::{authenticity, Authenticity};
+use crate::authenticity;
+use crate::authenticity::authenticity_abi::{true_authenticity, TrueAuthenticity};
 
 
 #[utoipa::path(
@@ -78,7 +79,7 @@ pub async fn verify_authenticity(
     // let contract = Authenticity::new(state.authenticity_contract, state.eth_client.clone());
     let contract = state.authenticity_contract.clone();
 
-    let manufacturer: authenticity::Manufacturer = contract
+    let manufacturer: true_authenticity::Manufacturer = contract
         .get_manufacturer(signer)
         .call()
         .await
