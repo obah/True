@@ -34,7 +34,7 @@ RUN apt-get update && apt-get install -y \
 # Copy the compiled binary
 COPY --from=builder /usr/src/app/target/release/backend /usr/local/bin/backend
 
-# Set environment variables (override in Render dashboard)
+# Set environment variables
 ENV RUST_LOG=info
 ENV PORT=8080
 
