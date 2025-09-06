@@ -134,7 +134,7 @@ const LandingPage = () => {
               </Link>
 
               <Link
-                href="/user"
+                href="/users"
                 className="group inline-flex items-center space-x-3 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 px-8 py-4 rounded-xl font-semibold text-lg border-2 border-gray-200 dark:border-slate-600 hover:border-emerald-300 dark:hover:border-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-400 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
                 <Users className="h-5 w-5" />
@@ -287,7 +287,7 @@ const LandingPage = () => {
             </Link>
 
             <Link
-              href="/user"
+              href="/users"
               className="group inline-flex items-center space-x-3 bg-transparent text-white px-8 py-4 rounded-xl font-semibold text-lg border-2 border-white hover:bg-white hover:text-blue-600 dark:hover:bg-slate-800 dark:hover:text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               <Users className="h-5 w-5" />
