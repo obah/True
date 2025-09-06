@@ -1,14 +1,18 @@
+use crate::authenticity::authenticity_event_listener::listen_for_authenticity_events;
 use crate::config::app_router::RouterPath;
 use crate::config::app_router::paths;
 use crate::config::app_state::AppState;
-use crate::authenticity::authenticity_event_listener::listen_for_authenticity_events;
 use crate::ownership::ownership_event::listen_for_ownership_events;
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use axum::Router;
+use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 use dotenv::dotenv;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::net::TcpListener;
+use tokio::time::{Duration, sleep};
+
+const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
 
 pub async fn server() -> Result<()> {
     eprintln!("PROJECT STARTING...");
@@ -17,22 +21,108 @@ pub async fn server() -> Result<()> {
 
     let arc_state = Arc::from(AppState::init_app_state().await.unwrap());
 
+    // Run migrations
+    let mut attempts = 3;
+    let mut conn = None;
+    for _ in 0..attempts {
+        match arc_state.db_pool.get() {
+            Ok(c) => {
+                conn = Some(c);
+                break;
+            }
+            Err(e) => {
+                eprintln!(
+                    "Failed to get DB connection (attempt {}): {:?}",
+                    4 - attempts,
+                    e
+                );
+                attempts -= 1;
+                if attempts == 0 {
+                    return Err(anyhow!("Failed to get DB connection after retries: {}", e));
+                }
+                sleep(Duration::from_secs(2)).await;
+            }
+        }
+    }
+    let mut conn = conn.unwrap();
+
+    conn.run_pending_migrations(MIGRATIONS)
+        .map_err(|e| {
+            eprintln!("Failed to run migrations: {:?}", e);
+            eyre::eyre!("Migration failed: {}", e)
+        })
+        .unwrap();
+    eprintln!("Database migrations completed successfully");
+
     let state_clone1 = arc_state.clone();
     let state_clone2 = arc_state.clone();
 
     tokio::spawn(async move {
+        let mut attempts = 5;
+        loop {
             if let Err(e) = listen_for_authenticity_events(&state_clone1).await {
-                eprintln!("Error in authenticity listener, retrying in 5s: {:?}", e);
+                eprintln!(
+                    "Error in authenticity listener (attempt {}): {:?}",
+                    6 - attempts,
+                    e
+                );
+                attempts -= 1;
+                if attempts == 0 {
+                    eprintln!("Max retries reached for authenticity listener");
+                    break;
+                }
                 tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+            } else {
+                break;
             }
+        }
     });
 
     tokio::spawn(async move {
+        let mut attempts = 5;
+        loop {
             if let Err(e) = listen_for_ownership_events(&state_clone2).await {
-                eprintln!("Error in event listener for ownership: {:?}", e);
+                eprintln!(
+                    "Error in ownership listener (attempt {}): {:?}",
+                    6 - attempts,
+                    e
+                );
+                attempts -= 1;
+                if attempts == 0 {
+                    eprintln!("Max retries reached for ownership listener");
+                    break;
+                }
                 tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+            } else {
+                break;
             }
+        }
     });
+
+    // let mut conn = arc_state
+    //     .db_pool
+    //     .get()
+    //     .map_err(|e| eyre::eyre!("Failed to get DB connection: {}", e)).unwrap();
+    // conn.run_pending_migrations(MIGRATIONS)
+    //     .map_err(|e| eyre::eyre!("Migration failed: {}", e)).unwrap();
+    //
+    //
+    // let state_clone1 = arc_state.clone();
+    // let state_clone2 = arc_state.clone();
+    //
+    // tokio::spawn(async move {
+    //     if let Err(e) = listen_for_authenticity_events(&state_clone1).await {
+    //         eprintln!("Error in authenticity listener, retrying in 5s: {:?}", e);
+    //         tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+    //     }
+    // });
+    //
+    // tokio::spawn(async move {
+    //     if let Err(e) = listen_for_ownership_events(&state_clone2).await {
+    //         eprintln!("Error in event listener for ownership: {:?}", e);
+    //         tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+    //     }
+    // });
 
     // Define routes
     let app: Router = paths(arc_state, RouterPath::init());
