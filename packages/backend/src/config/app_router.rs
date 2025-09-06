@@ -17,7 +17,7 @@ use axum::Router;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use actix_web::web::route;
-use tower_http::cors::CorsLayer;
+use tower_http::cors::{Any, CorsLayer};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
@@ -34,7 +34,13 @@ use crate::services::register_user::user_register;
 use crate::services::set_autheticity::set_authenticity;
 use crate::sync::sync;
 
+
 pub fn paths(state: Arc<AppState>, path: RouterPath) -> Router {
+    let cors = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods(Any)
+        .allow_headers(Any);
+
     let app = Router::new()
         .route(&path.generate_signature, post(generate_signature))
         .route(&path.verify_authenticity, post(verify_authenticity))
@@ -62,7 +68,7 @@ pub fn paths(state: Arc<AppState>, path: RouterPath) -> Router {
         .route(&path.manufacturer_name_exists, get(manufacturer_name_exists))
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .with_state(state)
-        .layer(CorsLayer::permissive()); // Optional: Enable CORS
+        .layer(cors); // Optional: Enable CORS
 
     app
 }

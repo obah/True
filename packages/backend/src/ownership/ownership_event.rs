@@ -29,8 +29,8 @@ pub async fn listen_for_ownership_events(state: &Arc<AppState>) -> Result<()> {
         eprintln!("Failed to get latest block: {:?}", e.to_string());
         eyre::eyre!("Failed to get latest block: {}", e)
     })?;
-    let from_block = latest_block.saturating_sub(U64::from(1000));
-    let chunk_size = U64::from(499);
+    let from_block = latest_block.saturating_sub(U64::from(20));
+    let chunk_size = U64::from(4);
 
     // Process historical events in chunks
     let mut current_block = from_block;

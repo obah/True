@@ -1,33 +1,6 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
-    User (id) {
-        id -> Text,
-        walletAddress -> Text,
-        username -> Text,
-        registeredAt -> Timestamp,
-        createdAt -> Timestamp,
-        updatedAt -> Timestamp,
-    }
-}
-
-diesel::table! {
-    _prisma_migrations (id) {
-        #[max_length = 36]
-        id -> Varchar,
-        #[max_length = 64]
-        checksum -> Varchar,
-        finished_at -> Nullable<Timestamptz>,
-        #[max_length = 255]
-        migration_name -> Varchar,
-        logs -> Nullable<Text>,
-        rolled_back_at -> Nullable<Timestamptz>,
-        started_at -> Timestamptz,
-        applied_steps_count -> Int4,
-    }
-}
-
-diesel::table! {
     authenticity_settings (id) {
         id -> Int4,
         authenticity_address -> Text,
@@ -124,8 +97,6 @@ diesel::table! {
 }
 
 diesel::allow_tables_to_appear_in_same_query!(
-    User,
-    _prisma_migrations,
     authenticity_settings,
     certificates,
     code_revokations,

@@ -28,8 +28,8 @@ pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()>
         eprintln!("Failed to get latest block: {:?}", e.to_string());
         eyre::eyre!("Failed to get latest block: {}", e)
     })?;
-    let from_block = latest_block.saturating_sub(U64::from(1000));
-    let chunk_size = 499;
+    let from_block = latest_block.saturating_sub(U64::from(20));
+    let chunk_size = 4;
 
     // Process historical events in chunks
     let mut current_block = from_block;
@@ -60,7 +60,7 @@ pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()>
             .map_err(|e| {
                 eprintln!(
                     "Failed to query ManufacturerRegistered events for blocks {} to {}: {:?}",
-                    current_block, to_block, e
+                    current_block, to_block, e.to_string()
                 );
                 eyre::eyre!("Failed to query ManufacturerRegistered events: {}", e)
             })?;
@@ -71,7 +71,7 @@ pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()>
             .map_err(|e| {
                 eprintln!(
                     "Failed to query AuthenticityCreated events for blocks {} to {}: {:?}",
-                    current_block, to_block, e
+                    current_block, to_block, e.to_string()
                 );
                 eyre::eyre!("Failed to query AuthenticityCreated events: {}", e)
             })?;
@@ -100,7 +100,7 @@ pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()>
     let events = contract.events().from_block(latest_block + 1);
 
     let mut stream = events.stream_with_meta().await.map_err(|e| {
-        eprintln!("Failed to create event stream: {:?}", e);
+        eprintln!("Failed to create event stream: {:?}", e.to_string());
         eyre::eyre!("Failed to create event stream: {}", e)
     })?;
 
@@ -134,7 +134,7 @@ pub async fn listen_for_authenticity_events(state: &Arc<AppState>) -> Result<()>
                 continue;
             }
             Some(Err(e)) => {
-                eprintln!("Event stream error: {:?}", e);
+                eprintln!("Event stream error: {:?}", e.to_string());
                 tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
                 continue;
             }

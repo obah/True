@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 dotenv.config();
-import { HardhatUserConfig } from "hardhat/config";
+import { HardhatUserConfig, vars } from "hardhat/config";
 import "@nomicfoundation/hardhat-ethers";
 import "@nomicfoundation/hardhat-chai-matchers";
 import "@typechain/hardhat";
@@ -20,7 +20,7 @@ const providerApiKey = process.env.ALCHEMY_API_KEY || "oKxs-03sij-U_N0iOlrSsZFr2
 const deployerPrivateKey =
   process.env.__RUNTIME_DEPLOYER_PRIVATE_KEY ?? "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 // If not set, it uses our block explorers default API keys.
-const etherscanApiKey = process.env.ETHERSCAN_V2_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
+const etherscanApiKey = process.env.ETHERSCAN_V2_API_KEY || "AXCBHDJPMFVZXUKAQ4VB298CPFK4STDM88";
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -106,8 +106,8 @@ const config: HardhatUserConfig = {
       accounts: [deployerPrivateKey],
     },
     baseSepolia: {
-      url: "https://sepolia.base.org",
-      accounts: [deployerPrivateKey],
+      url: vars.get("BASE_URL"),
+      accounts: [`0x${vars.get("PRIVATE_KEY")}`],
     },
     scrollSepolia: {
       url: "https://sepolia-rpc.scroll.io",
@@ -150,3 +150,11 @@ task("deploy").setAction(async (args, hre, runSuper) => {
 });
 
 export default config;
+
+// reusing "TrueOwnership" at 0xEF6e51980dA0c422BecB9d623Ad9E9231c0725c2
+// True Ownership Address:  0xEF6e51980dA0c422BecB9d623Ad9E9231c0725c2
+// https://sepolia.basescan.org/address/0xEF6e51980dA0c422BecB9d623Ad9E9231c0725c2#code
+
+// reusing "TrueAuthenticity" at 0xD6787D8603A47d872b7Eea81e4832f546E5B2A13
+// True Authenticity Address:  0xD6787D8603A47d872b7Eea81e4832f546E5B2A13
+// https://sepolia.basescan.org/address/0xC3f2de4eCBF8530Ca32615Df656109EaFA621a16#code
