@@ -169,7 +169,7 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6 transition-colors duration-300">
-              Why Choose True?
+              Why Choose Eri?
             </h2>
             <p className="text-xl text-gray-600 dark:text-slate-300 max-w-3xl mx-auto transition-colors duration-300">
               Engineered with advanced blockchain technology, delivering unparalleled security, transparency, and trust
@@ -273,7 +273,7 @@ const LandingPage = () => {
             Ready to Secure Your Products?
           </h2>
           <p className="text-xl text-blue-100 dark:text-blue-200 mb-10 max-w-3xl mx-auto transition-colors duration-300">
-            Join thousands of manufacturers and users who trust True for product verification and ownership management.
+            Join thousands of manufacturers and users who trust Eri for product verification and ownership management.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
@@ -306,10 +306,10 @@ const LandingPage = () => {
               <div className="p-2 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl">
                 <Shield className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold">True</span>
+              <span className="text-xl font-bold">Eri</span>
             </div>
             <p className="text-gray-400 dark:text-slate-400 text-center md:text-right transition-colors duration-300">
-              © 2025 True. Securing authenticity with blockchain technology.
+              © 2025 Eri. Securing authenticity with blockchain technology.
             </p>
           </div>
         </div>

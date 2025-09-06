@@ -13,10 +13,10 @@ export const Footer = () => {
             <div className="p-2 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl">
               <Shield className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold">True</span>
+            <span className="text-xl font-bold">Eri</span>
           </div>
           <p className="text-gray-400 dark:text-slate-400 text-center md:text-right transition-colors duration-300">
-            © 2025 True. Securing authenticity with blockchain technology.
+            © 2025 Eri. Securing authenticity with blockchain technology.
           </p>
         </div>
       </div>
