@@ -56,7 +56,19 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
         >
           <ProgressBar height="3px" color="#2299dd" />
           <ScaffoldEthApp>{children}</ScaffoldEthApp>
-          <ToastContainer position="bottom-center" />
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+            className="mt-16"
+          />
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
